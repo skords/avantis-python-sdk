@@ -1,47 +1,65 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: Quickstart
+description: "From zero to a filled trade."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+## 1. Install
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+```bash
+pip install avantis-trader-sdk
+```
 
-## Prerequisites
+## 2. Create an API key
 
-Before you begin, you must have:
+On the Avantis web app, open **API Keys** and generate a key. One wallet
+signature registers it as a trading delegate; approve USDC in the same flow
+if prompted. Copy the key — it is shown once.
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+```bash
+export AVANTIS_PRIVATE_KEY=0x...      # the API key
+export AVANTIS_TRADER_ADDRESS=0x...   # your wallet address
+```
 
-## Get started
+<Note>
+The API key can trade on your account but can never withdraw funds, approve
+USDC, or add other delegates. Revoke it anytime from the UI.
+</Note>
 
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
+## 3. Trade
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+```python
+import asyncio
+from avantis_trader_sdk import AsyncAvantis
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+async def main():
+    async with AsyncAvantis() as client:
+        receipt = await client.trade.market_open(
+            "ETH/USD", "long",
+            collateral=100,      # USDC
+            leverage=10,
+            take_profit=4000,    # optional
+            stop_loss=2800,      # optional
+        )
+        print("submitted:", receipt.tx_hash)
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-</Steps>
+        # market fills are operator-driven; poll positions for the fill
+        await asyncio.sleep(3)
+        positions = await client.account.positions()
+        for p in positions.positions:
+            print(p.side, float(p.collateral), "USDC at", float(p.open_price))
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+asyncio.run(main())
+```
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+## 4. Close
+
+```python
+pos = positions.positions[0]
+await client.trade.market_close(
+    pos.pair_index, pos.index,
+    collateral_to_close=float(pos.collateral),  # full close
+    is_pnl=pos.is_pnl,
+)
+```
+
+Continue with the [runnable examples](https://github.com/Avantis-Labs/avantis_trader_sdk/tree/main/examples) — one script per flow.
