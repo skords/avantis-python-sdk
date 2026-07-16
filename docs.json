@@ -19,7 +19,50 @@
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["index", "quickstart"]
+            "pages": ["index", "quickstart", "configuration", "concepts"]
+          },
+          {
+            "group": "Trading",
+            "pages": [
+              "trading/market-orders",
+              "trading/limit-orders",
+              "trading/tp-sl",
+              "trading/margin-and-size",
+              "trading/twap"
+            ]
+          },
+          {
+            "group": "Account & Portfolio",
+            "pages": [
+              "account/positions",
+              "account/portfolio",
+              "account/delegates",
+              "account/approvals"
+            ]
+          },
+          {
+            "group": "Data & Compute",
+            "pages": [
+              "data/markets",
+              "data/prices-and-streams",
+              "data/compute"
+            ]
+          },
+          {
+            "group": "Earn & Grow",
+            "pages": [
+              "more/lp-vault",
+              "more/referrals"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "advanced/execution-modes",
+              "advanced/mm-fast-path",
+              "advanced/security",
+              "advanced/errors"
+            ]
           }
         ]
       },
