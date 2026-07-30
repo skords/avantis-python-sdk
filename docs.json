@@ -157,6 +157,12 @@
             ]
           },
           {
+            "group": "Batched Market",
+            "pages": [
+              "api-reference/batched-market"
+            ]
+          },
+          {
             "group": "Relay",
             "openapi": "https://tx-builder-testnet.avantisfi.com/openapi.json",
             "pages": [
