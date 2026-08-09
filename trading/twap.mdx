@@ -7,6 +7,8 @@ TWAP orders split a large open or close into slices executed over `run_time_seco
 
 The SDK signs a TWAP intent (EIP-712) and submits it to the Avantis TWAP API, which registers the order on-chain itself and responds synchronously. The receipt carries the transaction hash and the on-chain `twapId` in `receipt.order_id`.
 
+TWAP is not available on [Upside pairs](/data/markets#upside-markets) (their TWAP params are zeroed on-chain); `twap_open`/`twap_close` raise a `ValidationError` (`UPSIDE_MARKET_ONLY`) on them.
+
 ## Open
 
 ```python
@@ -45,6 +47,7 @@ await client.trade.twap_close(
 
 ```python
 twaps = await client.account.twaps()             # paginated (0-based); include_canceled=True for history
+twap = await client.account.twap(123)            # one TWAP by twapId; None if unknown (404)
 await client.trade.twap_cancel(twap_id=123)      # twapId from receipt.order_id / account.twaps()
 ```
 
