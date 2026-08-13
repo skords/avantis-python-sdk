@@ -61,6 +61,7 @@
             "group": "Data & Compute",
             "pages": [
               "data/markets",
+              "data/socket-io",
               "data/prices-and-streams",
               "data/compute"
             ]
@@ -160,6 +161,12 @@
             "group": "Batched Market",
             "pages": [
               "api-reference/batched-market"
+            ]
+          },
+          {
+            "group": "Data",
+            "pages": [
+              "data/socket-io"
             ]
           },
           {
