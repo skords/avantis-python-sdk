@@ -229,7 +229,8 @@
               "GET /v2/nonce",
               "GET /v2/positions",
               "GET /v2/delegation",
-              "GET /v2/allowance"
+              "GET /v2/allowance",
+              "GET /v2/builder-code"
             ]
           }
         ]
