@@ -46,6 +46,7 @@ Gates: **read** never changes anything, **trade** signs orders or position chang
 | `link_telegram` | alerts | admin | Hosted connector only. |
 | `switch_network` | core | read | Hosted connector only. Moves the user between mainnet (real USDC) and testnet (play money) for the same wallet; the choice is remembered. |
 | `change_limits` | core | read | Hosted trading: the limits page for the trader's server and network, to open and sign when they want to raise, lower or customise their caps (a preset, none, or custom overall, per asset class and per pair). The AI cannot change limits. |
+| `complete_registration` | core | read | Hosted trading, several networks: finish registering the session key on a network after the trader signed on the register page (the page hands the signature to the server), or relay the signed text the trader pasted into the chat. Trading on that network works from the next call. |
 | `approve` | approvals | trade | Grant a USDC allowance so trades (target usdc), builder fees (target builder_fees) or vault deposits (target lp) can pull collateral. |
 | `manage_liquidity` | lp | funds | Provide liquidity to the Veranta vault or withdraw it: read the caller's vault position in human units, deposit USDC, or withdraw USDC to the trader wallet. |
 | `manage_referral` | referral | trade | Referral program: read stats for the trader, register a referral code the trader will own, set a referral code on the trader, or claim accrued rebates. |
@@ -436,6 +437,10 @@ Hosted connector only. Moves the user's requests between the networks this conne
 ### change_limits
 
 Where the trader raises, lowers or customises their trading limits. Returns the limits page for their server and network (`url`), whose limits apply now (`source`: the server default or the trader's own, with `setAt`) and the caps in force. The trader opens the link and signs once with the wallet; the new caps apply from the next quote. No input. Hosted trading connector only.
+
+### complete_registration
+
+Hosted trading connector serving several networks. After the trader signs the one time registration on the register page (the link `switch_network` and `check_setup` give), the page hands the signature to the server and this tool relays it with the connection's own session key; `check_setup` does the same on its own on the next call. When the trader pasted the signed text (a long string starting with `eyJ`) into the chat, pass it as `payload`. Optional `network` defaults to the active one. Returns `registered`, the relay `txHash` and, when there is nothing to relay yet, the `registrationLink` to sign at.
 
 ### approve
 
