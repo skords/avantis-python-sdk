@@ -13,7 +13,7 @@ Gates: **read** never changes anything, **trade** signs orders or position chang
 | --- | --- | --- | --- |
 | `check_setup` | core | read | Call this first in every session. |
 | `get_markets` | core | read | Search and list Veranta markets with live price, 24h change, funding and net carry rate per side (funding plus borrow), open interest, skew, leverage range, fees and market hours. |
-| `get_market` | core | read | Everything about one market before trading it: live price and 24h change (measured since the last close when the market was shut for more than 30 hours), the net carry rate per side (funding plus borrow) with its parts, open interest and skew, the spread quoted right now for a given size and side with its mechanism, how much more can be opened (headroom, including the trader's per-pair wallet cap), maker and taker fees, leverage range with any temporary cap, minimum position, market hours and next open or close, TWAP limits, notes such as the ETF a US500/US100 price tracks or a futures roll, and optionally a 24h candle summary. |
+| `get_market` | core | read | Everything about one market before trading it: live price and 24h change (measured since the last close when the market was shut for more than 30 hours), the net carry rate per side (funding plus borrow) with its parts, open interest and skew, the spread quoted right now for a given size and side with its mechanism, how much more can be opened (headroom, including the trader's per-pair wallet cap), maker and taker fees, leverage range with any temporary cap, the market's other mode (Upside or normal) with its own leverage, minimum, fees or profit share and open interest, minimum position, market hours and next open or close, TWAP limits, notes such as the ETF a US500/US100 price tracks or a futures roll, and optionally a 24h candle summary. |
 | `get_account` | core | read | The trader's account in one call: USDC balance and allowance, every open position with entry, live price, net PnL after fees and funding (clamped the way the contract settles: gross between minus 100 percent and the pair's max gain, net never below minus collateral), health (trade value as percent of collateral), liquidation price and distance, TP and SL, standing limit orders, running TWAPs, session key expiry, exposure by asset class, and alerts: collateral 60 percent consumed (warning) or 75 percent (critical), past liquidation and awaiting the keeper, no stop loss, key expiring, market closed. |
 | `get_history` | core | read | Past activity from the history API: a portfolio summary (realized net PnL since the V2 cutoff, funding, and the all-time v1 aggregates for win rate, fees paid, loss protection received, volume and best closes), the portfolio page for a period, paged fills with their fee breakdown, order history, or realized PnL by day for a period. |
 | `quote_trade` | core | read | Price a trade before executing it: opens, increases and closes as market, limit, stop_limit or twap, one leg or a basket. |
@@ -45,6 +45,7 @@ Gates: **read** never changes anything, **trade** signs orders or position chang
 | `send_telegram` | alerts | admin | Send a plain-text message to the user's linked Telegram chat, for example a summary they asked to receive on their phone. |
 | `link_telegram` | alerts | admin | Hosted connector only. |
 | `switch_network` | core | read | Hosted connector only. Moves the user between mainnet (real USDC) and testnet (play money) for the same wallet; the choice is remembered. |
+| `change_limits` | core | read | Hosted trading: the limits page for the trader's server and network, to open and sign when they want to raise, lower or customise their caps (a preset, none, or custom overall, per asset class and per pair). The AI cannot change limits. |
 | `approve` | approvals | trade | Grant a USDC allowance so trades (target usdc), builder fees (target builder_fees) or vault deposits (target lp) can pull collateral. |
 | `manage_liquidity` | lp | funds | Provide liquidity to the Veranta vault or withdraw it: read the caller's vault position in human units, deposit USDC, or withdraw USDC to the trader wallet. |
 | `manage_referral` | referral | trade | Referral program: read stats for the trader, register a referral code the trader will own, set a referral code on the trader, or claim accrued rebates. |
@@ -73,7 +74,7 @@ Search and list Veranta markets with live price, 24h change, funding and net car
 
 ### get_market
 
-Everything about one market before trading it: live price and 24h change (measured since the last close when the market was shut for more than 30 hours), the net carry rate per side (funding plus borrow) with its parts, open interest and skew, the spread quoted right now for a given size and side with its mechanism, how much more can be opened (headroom, including the trader's per-pair wallet cap), maker and taker fees, leverage range with any temporary cap, minimum position, market hours and next open or close, TWAP limits, notes such as the ETF a US500/US100 price tracks or a futures roll, and optionally a 24h candle summary. Use get_markets to find the symbol first if unsure. Example: \{ pair: 'XAU/USD', side: 'short', notionalUsd: 5000 \}.
+Everything about one market before trading it: live price and 24h change (measured since the last close when the market was shut for more than 30 hours), the net carry rate per side (funding plus borrow) with its parts, open interest and skew, the spread quoted right now for a given size and side with its mechanism, how much more can be opened (headroom, including the trader's per-pair wallet cap), maker and taker fees, leverage range with any temporary cap, the market's other mode (Upside or normal) with its own leverage, minimum, fees or profit share and open interest, minimum position, market hours and next open or close, TWAP limits, notes such as the ETF a US500/US100 price tracks or a futures roll, and optionally a 24h candle summary. Use get_markets to find the symbol first if unsure. Example: \{ pair: 'XAU/USD', side: 'short', notionalUsd: 5000 \}.
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -114,6 +115,7 @@ Price a trade before executing it: opens, increases and closes as market, limit,
 | --- | --- | --- | --- |
 | `action` | `open`, `increase`, `close` | no | open a new position, increase an existing one, or close (part of) an existing one. Default `"open"`. |
 | `pair` | string | no | Pair symbol for open, for example 'ETH/USD'. For increase or close you may pass positionId instead. |
+| `mode` | `normal`, `upside` | no | Which mode of the market to open in: normal (open and close fees, every order type) or upside (profit share on winning closes instead of fees, its own leverage cap, market orders only). Defaults to the symbol's own mode; mode 'upside' with pair 'BTC/USD' opens BTC_UPSIDE/USD. |
 | `positionId` | string | no | Position handle from get_account ('pairIndex:tradeIndex', for example '1:0'). Needed for increase and close unless pair plus side identifies exactly one position. |
 | `side` | `long`, `short` | no | Required for open. For close, selects the position when positionId is omitted. |
 | `collateralUsd` | number | no | Collateral in USD. Give two of collateralUsd, notionalUsd and leverage. |
@@ -430,6 +432,10 @@ Hosted connector only. Moves the user's requests between the networks this conne
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
 | `network` | `mainnet`, `testnet` | yes | mainnet trades real USDC on Base; testnet is play money, nothing there is real. |
+
+### change_limits
+
+Where the trader raises, lowers or customises their trading limits. Returns the limits page for their server and network (`url`), whose limits apply now (`source`: the server default or the trader's own, with `setAt`) and the caps in force. The trader opens the link and signs once with the wallet; the new caps apply from the next quote. No input. Hosted trading connector only.
 
 ### approve
 

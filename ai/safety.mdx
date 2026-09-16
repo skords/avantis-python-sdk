@@ -11,7 +11,7 @@ The session key is a delegate your wallet registers. It can open, close and modi
 
 ## The policy file
 
-<Note>Hosted accounts run under the operator's preset (shown by `check_setup` and `veranta://policy`). Editing the policy file and the `veranta-mcp policy` commands belong to the in-house local server for now.</Note>
+<Note>On the hosted connector the same policy is yours to set: a preset or custom caps chosen on the connect page or at [delegate.veranta.xyz/limits](https://delegate.veranta.xyz/limits), signed by your wallet and applied per network. `check_setup` and `veranta://policy` show what is in force. The policy file and the `veranta-mcp policy` commands belong to the in-house local server.</Note>
 
 `~/.veranta/policy.json` is created by `init` from a preset and enforced inside every trading tool, so the model cannot route around it. Change it with `veranta-mcp policy preset <name>` or by editing the file; an unknown key fails loudly instead of silently leaving a preset value in force.
 

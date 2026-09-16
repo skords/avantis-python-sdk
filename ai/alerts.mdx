@@ -31,7 +31,7 @@ Ask, and the AI calls `manage_alerts` for you. Pairs resolve from common names, 
 | `market_hours` | A market closes within a number of minutes | 15 minutes; says how many positions you hold on it |
 | `trailing_stop` | The price moves in your favor far enough to tighten the stop | Step 0.1 percent, at least 60 seconds between moves |
 
-Some things arrive without any rule: position opens and closes seen by the daemon, from any client, including take profit, stop loss and liquidation (an alert can trail the fill by up to one poll interval, since there is no order stream), and a notice when trading is paused. Every alert is also written to the activity log.
+Some things arrive without any rule: position opens and closes seen by the daemon, from any client. A close is explained from your trade history, never guessed from the price: the message names the cause (market close, take profit, stop loss, liquidation, TWAP), the execution price and the realized PnL after fees. The daemon waits up to two minutes for the history to index the fill; if it still has nothing, you get the close without a cause and `get_history` fills it in later. Pauses (the daily loss stop or the kill switch) and the session key nearing expiry are announced the same way.
 
 ## Health alerts
 

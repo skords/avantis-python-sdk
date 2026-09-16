@@ -43,6 +43,9 @@ description: "Common questions and the fixes check_setup will point you to."
     The order was sent but did not confirm within the timeout (75 seconds by default). It is not a failure and not a second trade: `check_order` looks the leg up by its `trackingId` and reports whether it filled, was cancelled by the protocol, or failed. Retrying the same quote returns the same result.
   </Accordion>
 
+  <Accordion title="Can I raise my limits, or set my own?">
+    Yes, and only you can. On the hosted connector open [delegate.veranta.xyz/limits](https://delegate.veranta.xyz/limits) (the block message links to it with your server and network filled in), pick a preset or set your own caps, overall, per asset class or per pair, and sign once with your wallet. The AI cannot change limits, only pause trading. On a local install edit the policy file or run `veranta-mcp policy preset <name>`.
+  </Accordion>
   <Accordion title="Trading is paused and the AI cannot resume it.">
     By design. Locally, run `veranta-mcp policy resume` in a terminal. On the hosted connector, open the resume page on delegate.veranta.xyz (every block message and the pause reply link to it) and sign with your wallet. A daily-loss pause also lifts on its own at the next UTC day; a manual pause never does.
   </Accordion>
