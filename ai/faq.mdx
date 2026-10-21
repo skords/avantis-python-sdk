@@ -8,7 +8,7 @@ description: "Common questions and the fixes check_setup will point you to."
     Not yet as a public download: the npm package is in-house for now. Use the hosted connector at `https://mcp.veranta.xyz/mcp/trade` (or the testnet address), which has every tool. The local server and its commands mentioned elsewhere in these docs describe what the Veranta team runs today.
   </Accordion>
   <Accordion title="Does the AI trade on its own?">
-    No. It quotes first and stops; nothing executes until your next message says go. If you tell it in the conversation to execute without asking, it will, and even then every quote passes the policy caps, the confirmation threshold and the pause.
+    Only when you ask it to. A trade you ask for is quoted and executed in the same turn, without a second "are you sure": your limits are the guardrail, and every quote still passes the policy caps, the pause and any confirmation threshold you set yourself. Nothing runs between your messages; there is no scheduler.
   </Accordion>
 
   <Accordion title="Can the AI take my money?">
@@ -16,7 +16,7 @@ description: "Common questions and the fixes check_setup will point you to."
   </Accordion>
 
   <Accordion title="Why did a trade need confirmation?">
-    The quote was at or above `confirmAboveNotionalUsd` in your policy, or a bulk close touched more than three positions. The model shows the sentence and only proceeds after your yes.
+    The quote was at or above `confirmAboveNotionalUsd`, a threshold you set yourself (the presets set none). The model shows the sentence and only proceeds after your yes. Moving USDC into or out of a vault and granting an unlimited allowance always ask.
   </Accordion>
 
   <Accordion title="check_setup says the session key is not an active delegate.">

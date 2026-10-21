@@ -107,7 +107,7 @@ Then say the trade: "Check my Veranta setup, then long 500 dollars of ETH at 5x 
 
 - **The key can trade, not withdraw.** Your AI signs with a session key your wallet registers as a delegate. The contract lets it open, close and manage positions and margin (margin withdrawals only ever pay your own wallet). It cannot withdraw USDC from your account, grant allowances or add delegates. You pick the expiry and revoke it any time.
 - **Policy limits you choose.** A policy file caps leverage, collateral and notional per trade, notional per day, open positions and daily loss. Presets `conservative`, `standard` and `pro`; hosted runs on `conservative` (3x, 250 dollars per trade, 100 dollars daily loss). The AI cannot edit it.
-- **Every trade is quoted, then confirmed.** The quote shows collateral, leverage, notional, fees, liquidation price, warnings and the verdict. It executes once, within 30 seconds, and only after your go-ahead. Trades above your threshold ask for an explicit yes.
+- **Every trade is quoted, then executed.** The quote shows collateral, leverage, notional, fees, liquidation price, warnings and the verdict, and the trade you asked for executes once, within 30 seconds, inside your limits. Only a threshold you set yourself asks for an explicit yes.
 - **Pause and daily loss stop.** "Stop trading" blocks new positions while closing keeps working, and only you can resume. The daily loss limit pauses on its own until the next UTC day. Everything the AI does lands in an activity log you can read.
 
 <CardGroup cols={3}>
